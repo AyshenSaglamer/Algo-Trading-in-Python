@@ -116,8 +116,8 @@ current_no_stock = float(input("What is the number of current number of stocks?"
 how_many_buy = float(input("How many number of stocks to buy?"))
 how_many_sell = float(input("How many number of stocks to sell?"))
 def total (current_no_stock, how_many_buy, how_many_sell):
-     total = current_no_stock + how_many_buy - how_many_sell
-     return total
+     total_cal = current_no_stock + how_many_buy - how_many_sell
+     return total_cal
 
 
 
