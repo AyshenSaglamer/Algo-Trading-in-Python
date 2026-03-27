@@ -4,6 +4,26 @@ Q1) Operators and Logical Expressions
 You have a list of stock prices over 30 days. Write a logical expression that identifies whether there are consecutive price drops over three days or more.
 For example, the sequence [120, 118, 115, 110] qualifies, but [120, 118, 120, 110] does not.
 '''
+# Logic --> price[i] > price[i+1] > price[i+2] > price[i+3]
+prices = [120,118,115,110]
+found = False  # This means it is not found yet.
+for i in range(len(prices) - 3): # In python, range(1) means only index 0, in order i to be 0 and loop all the array.
+if prices[i] > prices[i+1] and prices[i+1] > prices[i+2] and prices[i+2] > prices[i+3]:
+        found = True
+        break
+
+print(found)
+'''
+Second Method:
+prices = [120, 118, 115, 110]
+
+result = any(
+    prices[i] > prices[i+1] > prices[i+2] > prices[i+3]
+    for i in range(len(prices) - 3)
+)
+
+print(result)
+# any => ... and ... and ... and ... and
 '''
 Q2) If - else statement
 
