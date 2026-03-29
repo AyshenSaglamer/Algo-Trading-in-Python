@@ -224,11 +224,87 @@ Q5)For Loop
 You have data on the opening and closing prices of multiple stocks in a portfolio.
 Using a for loop, calculate and print the total daily gain or loss for each stock in the portfolio.
 '''
+# Portfolio data — list of dictionaries, one per stock
+portfolio = [
+    {"symbol": "AAPL", "open": 150.00, "close": 155.00},
+    {"symbol": "TSLA", "open": 200.00, "close": 192.00},
+    {"symbol": "GOOG", "open": 130.00, "close": 133.50},
+    {"symbol": "AMZN", "open": 175.00, "close": 170.00},
+    {"symbol": "MSFT", "open": 310.00, "close": 318.00},
+]
+
+# Loop through each stock and calculate gain/loss
+for stock in portfolio:
+    symbol = stock["symbol"]
+    open_price  = stock["open"]
+    close_price = stock["close"]
+
+    daily_change = close_price - open_price   # gain if positive, loss if negative
+
+    if daily_change > 0:
+        result = "Gain"
+    elif daily_change < 0:
+        result = "Loss"
+    else:
+        result = "No Change"
+
+    print(f"{symbol}: {result} of ${abs(daily_change):.2f}")
+```
+'''
+**Output:**
+```
+AAPL: Gain of $5.00
+TSLA: Loss of $8.00
+GOOG: Gain of $3.50
+AMZN: Loss of $5.00
+MSFT: Gain of $8.00
+'''
 '''
 Q6) Nested Loops
 
 Create a nested loop that simulates a simple market-making strategy by placing buy and sell orders over a range of prices and volumes. 
 Assume bid prices range from 90 to 100 and ask prices range from 101 to 110.
+'''
+# Define price and volume ranges
+bid_prices = range(90, 101)    # 90, 91, 92, ... 100
+ask_prices = range(101, 111)   # 101, 102, 103, ... 110
+volumes    = [10, 20, 30]      # order sizes in units
+
+# Nested loop — simulate placing orders
+for bid in bid_prices:
+    for ask in ask_prices:
+        for volume in volumes:
+            spread = ask - bid
+            profit = spread * volume
+
+            print(f"BUY  @ ${bid} | SELL @ ${ask} | "
+                  f"Volume: {volume} | Spread: ${spread} | Profit: ${profit}")
+```
+'''
+The goal of market making is to find all possible order combinations. 
+You don't just want one bid with one ask — you want to simulate every bid paired with every ask at every volume.
+
+Think of it like a multiplication table:
+          ask=101  ask=102  ask=103 ... ask=110
+bid=90  |   ✓        ✓        ✓           ✓
+bid=91  |   ✓        ✓        ✓           ✓
+bid=92  |   ✓        ✓        ✓           ✓
+  ...
+bid=100 |   ✓        ✓        ✓           ✓
+Every ✓ is a possible order. A single loop could only go across one row or one column — not fill the whole table. 
+Nested loops fill every cell.
+
+Why 3 loops specifically?
+Because we have 3 variables that each need to cycle through all their values.
+'''
+'''
+**Output (sample):**
+```
+BUY  @ $90 | SELL @ $101 | Volume: 10 | Spread: $11 | Profit: $110
+BUY  @ $90 | SELL @ $101 | Volume: 20 | Spread: $11 | Profit: $220
+BUY  @ $90 | SELL @ $101 | Volume: 30 | Spread: $11 | Profit: $330
+BUY  @ $90 | SELL @ $102 | Volume: 10 | Spread: $12 | Profit: $120
+...
 '''
 '''
 7. Complex If-Else Logic
