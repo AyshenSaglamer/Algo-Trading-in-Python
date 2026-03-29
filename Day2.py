@@ -25,6 +25,7 @@ result = any(
 print(result)
 # any => ... and ... and ... and ... and
 '''
+'''
 Q2) If - else statement
 
 You are designing an algorithm to trade stocks. If the current price of a stock is above the 30-day moving average, print "Buy Signal"; 
