@@ -27,19 +27,196 @@ print(result)
 '''
 Q2) If - else statement
 
-You are designing an algorithm to trade stocks. If the current price of a stock is above the 30-day moving average, print "Buy Signal"; otherwise, print "Sell Signal". Assume you have a list of daily prices and that the moving average can be calculated.
+You are designing an algorithm to trade stocks. If the current price of a stock is above the 30-day moving average, print "Buy Signal"; 
+otherwise, print "Sell Signal". Assume you have a list of daily prices and that the moving average can be calculated.
 '''
+def trading_signal(prices): # not enough data
+    if len(prices) < 30:
+        print("Not enough data to calculate moving average.")
+        return
+
+    moving_average = sum(prices[-30:]) / 30 # prices[-30:] slices the last 30 elements to compute the moving average
+    # The -30 means "start 30 positions from the end of the list"
+    # The : with nothing after it means "go all the way to the end"
+    # So together, it grabs the last 30 elements
+    current_price = prices[-1] # prices[-1] gets the most recent (current) price
+
+    if current_price > moving_average:
+        print("Buy Signal")
+    else:
+        print("Sell Signal")
+
+# Example usage
+daily_prices = [102, 105, 98, 110, 107, 103, 99, 115, 112, 108,
+                106, 104, 109, 113, 111, 100, 97, 116, 120, 118,
+                114, 119, 122, 117, 115, 121, 125, 123, 119, 130]
+
+trading_signal(daily_prices)  # Output: Buy Signal (130 > 111.4)
 '''
 Q3) Modules (pandas)
 
-Use the `pandas` library to load a CSV file containing historical trading data and calculate the daily percentage change of closing prices over a period of time.
+Use the `pandas` library to load a CSV file containing historical trading data and calculate the daily percentage change of closing prices 
+over a period of time.       
 '''
 '''
+A CSV (Comma-Separated Values) file is a plain text file that stores data in a table format, where each line is a row and each value 
+is separated by a comma.
+Date,Open,High,Low,Close,Volume
+2024-01-01,150.00,155.00,148.00,153.00,1000000
+2024-01-02,153.00,158.00,151.00,156.50,1200000
+2024-01-03,156.50,160.00,154.00,154.00,980000
+'''
+import pandas as pd # import the pandas library, but let me refer to it as pd instead of typing pandas every time.
+# --- Load the CSV ---
+df = pd.read_csv('trading_data.csv', parse_dates=['Date'])
+'''
+df -> A variable name — short for DataFrame (a table of rows & columns). You could name it anything, but df is the convention.
+pd.read_csv(...) -> A pandas function that opens and reads a CSV file
+'trading_data.csv'The name of the file to open (must be in the same folder as your script)
+parse_dates=['Date']Tells pandas to treat the Date column as actual dates, not plain text
+'''
+df.sort_values('Date', inplace=True)
+'''
+df ->  The DataFrame (table) you loaded from the CSV 
+.sort_values(...) ->  A pandas function that **sorts the rows** of the table 
+'Date' -> The column to sort by — in this case, sort by date 
+`inplace=True` -> **Modify the original** `df` directly, don't create a new one |
+
+Why sort by date?
+CSV files aren't always in order. Your data might look like this when loaded:
+```
+Date        Close
+2024-01-03  154.00   ← out of order!
+2024-01-01  153.00
+2024-01-02  156.50
+```
+
+After `sort_values('Date')` it becomes:
+```
+Date        Close
+2024-01-01  153.00   ← now in order ✓
+2024-01-02  156.50
+2024-01-03  154.00
+
+What does inplace=True mean exactly?
+# inplace=False (default) — creates a NEW sorted table, original unchanged
+df_sorted = df.sort_values('Date')
+
+# inplace=True — sorts the ORIGINAL df directly, no new variable needed
+df.sort_values('Date', inplace=True)
+Both achieve the same result — inplace=True just saves you creating an extra variable.
+'''
+df.set_index('Date', inplace=True)
+'''
+`df` -> Your DataFrame (table) 
+`.set_index(...)` -> Makes a chosen column the **row label** (index) of the table 
+`'Date'` -> The column to use as the index 
+`inplace=True` -> Modify the original `df` directly 
+'''
+df['Daily_Pct_Change'] = df['Close'].pct_change() * 100
+'''
+df['Daily_Pct_Change']` -> Creates a **new column** in the table called `Daily_Pct_Change` 
+`df['Close']` -> Grabs the existing `Close` column 
+`.pct_change()` -> Calculates **how much each value changed** compared to the previous row as a decimal 
+`* 100` -> Converts the decimal into a **percentage** 
+
+**How `pct_change()` works row by row:**
+```
+Date        Close    pct_change()    * 100
+2024-01-01  153.00   NaN             NaN       ← no previous row
+2024-01-02  156.50   0.02288         2.288%    ← (156.50-153.00)/153.00
+2024-01-03  154.00  -0.01597        -1.597%    ← (154.00-156.50)/156.50
+        
+'''
+print(df[['Close', 'Daily_Pct_Change']].head(10))
+ '''
+df[['Close', 'Daily_Pct_Change']] -> Select only these two columns to display (double brackets = multiple columns)
+.head(10) -> Show only the first 10 rows
+print(...) -> Output the result to the screen
+
+Why double brackets [[ ]]?
+df['Close']            # single brackets → returns one column (a Series)
+df[['Close', 'Daily_Pct_Change']]  # double brackets → returns multiple columns (a DataFrame)
+'''
+        
 Q4) While Loop
 
 Create a loop that repeatedly checks a stock price from a real-time source every 10 seconds until the stock falls below a threshold value. 
 In this scenario, print `"Threshold Exceeded"` when the threshold is crossed.
 '''
+import requests # A library that lets your program talk to the internet — send HTTP requests and receive responses
+import time # A library that lets you control timing in your program
+
+def get_stock_price(symbol): # symbol -> A parameter — the stock ticker you pass in (e.g. "AAPL")
+    """Fetch real-time stock price using Yahoo Finance API (free, no key needed).""" 
+    '''
+    """..."""A docstring — a description of what the function does. It is not executed. Python reads it but doesn't run it as code
+    It's like a comment but specifically for documenting functions. You can even access it later with:
+    print(get_stock_price.__doc__)
+# Output: Fetch real-time stock price using Yahoo Finance API (free, no key needed).
+    '''
+    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+    '''
+     f"..." -> An f-string — embeds variables inside text
+     {symbol}Gets replaced by the actual stock ticker passed in
+# If symbol = "AAPL"
+url → "https://query1.finance.yahoo.com/v8/finance/chart/AAPL"
+
+# If symbol = "TSLA"
+url → "https://query1.finance.yahoo.com/v8/finance/chart/TSLA"         
+'''
+    response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"})
+'''
+        requests.get(url) -> Visits the URL and fetches the data from Yahoo Finance
+        headers={...} -> Extra information sent along with the request
+        "User-Agent": "Mozilla/5.0"Tells Yahoo the request is coming from a real browser, not a bot
+        response -> Stores the raw reply from Yahoo's server
+'''
+    data = response.json()
+'''
+response-> The raw reply from Yahoo's server (looks like plain text)
+.json() -> Converts that raw text into a Python dictionary you can navigate
+'''
+    price = data['chart']['result'][0]['meta']['regularMarketPrice']
+'''
+ Extract the price from the dictionary:
+ Remember data is a nested dictionary (like folders inside folders). You navigate it using ['key'] at each level:
+pythondata
+ └── ['chart']                    # go into 'chart' folder
+      └── ['result']              # go into 'result' folder
+           └── [0]                # grab the FIRST item in the list
+                └── ['meta']      # go into 'meta' folder
+                     └── ['regularMarketPrice']  # grab the price ✓
+'''
+    return price
+
+def monitor_stock(symbol, threshold):
+    """Check stock price every 10 seconds until it falls below threshold."""
+    print(f"Monitoring {symbol} | Threshold: ${threshold}")
+    print("-" * 40)
+
+    while True:
+        price = get_stock_price(symbol)
+        print(f"Current price: ${price:.2f}")
+
+        if price < threshold:
+            print("Threshold Exceeded")  # price dropped below threshold
+            break                        # stop the loop
+
+        time.sleep(10)   # wait 10 seconds before checking again
+
+# --- Run it ---
+monitor_stock("AAPL", threshold=180.00)
+```
+
+**Example Output:**
+```
+Monitoring AAPL | Threshold: $180.00
+----------------------------------------
+Current price: $184.50
+Current price: $182.10
+Current price: $179.80
+Threshold Exceeded
 '''
 Q5)For Loop
 You have data on the opening and closing prices of multiple stocks in a portfolio.
