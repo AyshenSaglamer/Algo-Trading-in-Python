@@ -139,7 +139,7 @@ Why double brackets [[ ]]?
 df['Close']            # single brackets → returns one column (a Series)
 df[['Close', 'Daily_Pct_Change']]  # double brackets → returns multiple columns (a DataFrame)
 '''
-        
+'''       
 Q4) While Loop
 
 Create a loop that repeatedly checks a stock price from a real-time source every 10 seconds until the stock falls below a threshold value. 
@@ -209,7 +209,7 @@ def monitor_stock(symbol, threshold):
 # --- Run it ---
 monitor_stock("AAPL", threshold=180.00)
 ```
-
+'''
 **Example Output:**
 ```
 Monitoring AAPL | Threshold: $180.00
@@ -218,6 +218,7 @@ Current price: $184.50
 Current price: $182.10
 Current price: $179.80
 Threshold Exceeded
+'''
 '''
 Q5)For Loop
 You have data on the opening and closing prices of multiple stocks in a portfolio.
