@@ -313,10 +313,78 @@ You have a complex trading rule where a `"Strong Buy"` signal is given if the st
 a `"Buy"` signal is given if only above the 30-day, a `"Hold"` signal if above the 50-day, and a `"Sell"` signal otherwise. 
 Calculate the signals assuming you have daily prices for at least 50 days.
 '''
+# Sample daily prices (50+ days)
+daily_prices = [
+    120, 122, 119, 125, 128, 130, 127, 123, 121, 118,
+    115, 117, 120, 124, 126, 129, 131, 135, 132, 128,
+    125, 122, 120, 118, 121, 124, 127, 130, 133, 136,
+    138, 135, 132, 129, 126, 124, 127, 130, 134, 137,
+    140, 138, 135, 132, 130, 128, 131, 134, 137, 140,
+    143   # ← current price (day 51)
+]
+avg_30days = sum(daily_prices[-30:])/30 # Average of last 30 days
+avg_50days = sum(daily_prices[-50:]/50 # Average of last 50 days
+current_price = daily_prices[-1]
+
+if current_price > avg_30days and current_price > avg_50days:
+            signal =  "Strong Buy"
+elif current_price > avg_30days:
+            signal = "Buy"
+elif current_price > avg_50days:
+            signal = "Hold"
+else:
+            signal = "Sell"
+print(f"Current Price: ${current_price}")
+print(f"30 Days Moving Averages: ${avg_30days}")
+print(f"50 Days Moving Averages: ${avg_50days}")
+print(f"Signal: ${signal}")
+
 '''
 Q8. Modules (numpy)
 
 Use the `numpy` module to calculate the rolling average for a window of 5 days over a numpy array containing 20 stock prices.
+'''
+import numpy as np
+prices = np.array([
+    120, 122, 119, 125, 128,
+    130, 127, 123, 121, 118,
+    115, 117, 120, 124, 126,
+    129, 131, 135, 132, 128
+])
+'''
+Converts a Python list into a numpy array
+Why numpy? Numpy arrays are faster and support mathematical operations directly
+'''
+window = 5 # Calculate 5-day rolling average
+rolling_avg = np.convolve(prices, np.ones(window) / window, mode = "valid")
+'''
+np.ones(window) — creates an array of ones:
+np.ones(5)  →  [1, 1, 1, 1, 1]
+np.ones(window)/window — divides each one by 5:
+np.ones(5)/5  →  [0.2, 0.2, 0.2, 0.2, 0.2]   # each weight = 1/5
+This creates equal weights — each of the 5 days contributes equally to the average.
+np.convolve() — slides the weights across the prices:
+# For the first window (days 1-5):
+[120, 122, 119, 125, 128] × [0.2, 0.2, 0.2, 0.2, 0.2]
+= (120×0.2) + (122×0.2) + (119×0.2) + (125×0.2) + (128×0.2)
+= 24 + 24.4 + 23.8 + 25 + 25.6
+= 122.80 ✓
+mode='valid' — only returns results where the full window fits:
+'''
+# Print results
+print("Day  Price   5-Day Rolling Avg")
+print("-" * 32)
+
+for i, avg in enumerate(rolling_avg):
+    day = i + window          # first valid average starts at day 5
+    price = prices[day - 1]   # corresponding price
+    print(f"{day:>3}  ${price:>5}   ${avg:.2f}")
+'''
+enumerate() -> Returns both the index and value of each item together
+i->The position (0, 1, 2, 3...)
+{day:>3}Print day number, right-aligned in 3 characters wide
+{price:>5}Print price, right-aligned in 5 characters wide
+{avg:.2f}Print average rounded to 2 decimal places
 '''
 '''
 Q9. Optimization with Loops**
